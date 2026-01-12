@@ -1,4 +1,5 @@
 
+import os
 from totoms import (APIConfiguration, TotoEnvironment, TotoMicroserviceConfiguration, TotoMicroservice)
 from totoms.TotoMicroservice import APIEndpoint, determine_environment
 from totoms.TotoDelegateDecorator import toto_delegate
@@ -9,7 +10,7 @@ def get_microservice_config() -> TotoMicroserviceConfiguration:
     return TotoMicroserviceConfiguration(
         service_name="whisper", 
         environment=TotoEnvironment(
-            hyperscaler="aws", 
+            hyperscaler=os.getenv("HYPERSCALER", "aws").lower(),
             hyperscaler_configuration=determine_environment()
         ), 
         custom_config=WhisperConfig, 
