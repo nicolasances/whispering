@@ -9,7 +9,8 @@ from whispercpp import Whisper
 
 w = Whisper('tiny')
 
-UPLOAD_DIR="/workspaces/whispering/audiofiles"
+# Get upload directory from environment variable
+UPLOAD_DIR = os.getenv('AUDIO_UPLOAD_DIR', '/app/audiofiles')
 
 @toto_delegate
 async def transcribe_recording(request: Request, user_context: UserContext, exec_context: ExecutionContext):
@@ -20,14 +21,20 @@ async def transcribe_recording(request: Request, user_context: UserContext, exec
     if file: 
         filename = file.filename
         fileobj = file.file
+        
         upload_name = os.path.join(UPLOAD_DIR, filename)
-        upload_file = open(upload_name, 'wb+')
-        shutil.copyfileobj(fileobj, upload_file)
-        upload_file.close()
+        with open(upload_name, 'wb') as upload_file:
+            shutil.copyfileobj(fileobj, upload_file)
         
-        result = w.transcribe(upload_name)
-        text = w.extract_text(result)
+        try:
+            result = w.transcribe(upload_name)
+            text = w.extract_text(result)
+            
+            return {"transcription": text}
         
-        return {"transcription": text}
+        finally:
+            # Clean up the audio file
+            if os.path.exists(upload_name):
+                os.unlink(upload_name)
     
     return {"error": "No file uploaded"}
