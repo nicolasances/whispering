@@ -15,8 +15,8 @@ app.add_middleware(
     expose_headers=["Content-Disposition"],
 )
 
-w = Whisper.from_pretrained('tiny')
-UPLOAD_DIR="/tmp"
+w = Whisper('tiny')
+UPLOAD_DIR="/workspaces/whispering/audiofiles"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
     
