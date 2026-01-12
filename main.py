@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 import os
 import shutil
 from whispercpp import Whisper
@@ -33,3 +33,26 @@ async def transcriptions(file: UploadFile = File(...)):
     text = w.extract_text(result)
     
     return text
+
+async def go(request: Request): 
+    form = await request.form()
+    file = form['file']
+
+    if file: 
+        filename = file.filename
+        fileobj = file.file
+        upload_name = os.path.join(UPLOAD_DIR, filename)
+        upload_file = open(upload_name, 'wb+')
+        shutil.copyfileobj(fileobj, upload_file)
+        upload_file.close()
+        
+        result = w.transcribe(upload_name)
+        text = w.extract_text(result)
+        
+        return text
+    
+    return {"error": "No file uploaded"}
+
+
+
+app.add_api_route('/go', go, methods=['POST'])
