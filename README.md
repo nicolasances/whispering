@@ -6,13 +6,22 @@ It has been heavily inspired and has used the following resources:
 * [Hosting OpenAI Whisper on AWS](https://medium.com/@hyiqiu23/hosting-a-openai-whisper-on-aws-for-free-db0bc85481f6) by [Yichewy](https://medium.com/@hyiqiu23)
 * [Whisper C++0 Project](https://github.com/ggml-org/whisper.cpp)
 
+## IMPORTANT: Common Issues
+### ffmpeg
+WhisperCPP uses `ffmpeg`. <br>
+But it DOES NOT need the `ffmpeg` python package but the OS package. <br>
+So if you run locally on a linux system, make sure that you `apt install ffmpeg` (or local flavor based on the OS). <br>
+**NOTHING WILL WORK WITHOUT THAT**. 
+
+It is important to notice that the message was somehow that the audio file was not found, but looking at root causes you see that `ffmpeg` is missing.
+
 ## Basics: Hosting Whisper on EC2
 This is basically following this Medium article: [Hosting OpenAI Whisper on AWS](https://medium.com/@hyiqiu23/hosting-a-openai-whisper-on-aws-for-free-db0bc85481f6).
 
 The steps are: 
 - Create a VM (Ubuntu). Make sure you can SSH and that it has a public IP. Install python. 
 - Clone https://github.com/hyqshr/whispercpp-fastapi.git
-- Pip install `python3-pip` and `ffmpeg`
+- Apt install `python3-pip` and `ffmpeg`
 - Pip install -r requirements.txt
 - Install and configure nginx. Run nginx. 
 
