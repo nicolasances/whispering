@@ -2,7 +2,6 @@
 import os
 from totoms import (APIConfiguration, TotoEnvironment, TotoMicroserviceConfiguration, TotoMicroservice)
 from totoms.TotoMicroservice import APIEndpoint, determine_environment
-from totoms.TotoDelegateDecorator import toto_delegate
 from config import WhisperConfig
 from transcribe import transcribe_recording
 
