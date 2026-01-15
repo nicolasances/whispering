@@ -30,7 +30,10 @@ async def transcribe_recording(request: Request, user_context: UserContext, exec
             result = w.transcribe(upload_name)
             text = w.extract_text(result)
             
-            return {"transcription": text}
+            # test is an array of strings that need to be joined
+            full_text = "".join(text)
+            
+            return {"text": full_text}
         
         finally:
             # Clean up the audio file
