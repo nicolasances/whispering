@@ -73,3 +73,9 @@ sudo systemctl daemon-reload
 sudo systemctl start whisper.service
 sudo systemctl enable whisper.service
 ```
+
+## Running on AWS
+Whispering is also setup as a [Toto Microservice](https://github.com/nicolasances/toto) that can be deployed on AWS. <br>
+This repo is already configured for it to be deployed: 
+* **As an AWS ECS Service** - the terraform configuration is in the [Toto AWS Terraform Repo](https://github.com/nicolasances/toto-aws-terra). 
+

@@ -8,6 +8,7 @@ from transcribe import transcribe_recording
 def get_microservice_config() -> TotoMicroserviceConfiguration:
     return TotoMicroserviceConfiguration(
         service_name="whisper", 
+        base_path="/whispering",
         environment=TotoEnvironment(
             hyperscaler=os.getenv("HYPERSCALER", "aws").lower(),
             hyperscaler_configuration=determine_environment()
