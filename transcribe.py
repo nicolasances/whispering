@@ -7,7 +7,7 @@ import os
 import shutil
 from whispercpp import Whisper
 
-w = Whisper('tiny')
+w = Whisper('medium')
 
 # Get upload directory from environment variable
 UPLOAD_DIR = os.getenv('AUDIO_UPLOAD_DIR', '/app/audiofiles')
