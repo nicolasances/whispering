@@ -3,7 +3,7 @@ import os
 from totoms import (APIConfiguration, TotoEnvironment, TotoMicroserviceConfiguration, TotoMicroservice)
 from totoms.TotoMicroservice import APIEndpoint, determine_environment
 from config import WhisperConfig
-from transcribe import transcribe_recording
+from transcribe import run_as_job, transcribe_recording
 
 def get_microservice_config() -> TotoMicroserviceConfiguration:
     return TotoMicroserviceConfiguration(
@@ -21,11 +21,21 @@ def get_microservice_config() -> TotoMicroserviceConfiguration:
         )
     )
     
-async def main(): 
+async def start_microservice(): 
     microservice = await TotoMicroservice.init(get_microservice_config())
     port = 8080
     await microservice.start(port=port)
+        
     
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main())
+    
+    # Check the mode
+    # This service supports the "API" mode and the "job" mode
+    mode = os.environ.get('MODE', 'api')
+    
+    if mode == 'api':
+        asyncio.run(start_microservice())
+    else: 
+        # Run as a job
+        run_as_job()
