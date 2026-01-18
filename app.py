@@ -29,6 +29,7 @@ async def start_microservice():
     
 if __name__ == "__main__":
     import asyncio
+    import sys
     
     # Check the mode
     # This service supports the "API" mode and the "job" mode
@@ -38,4 +39,9 @@ if __name__ == "__main__":
         asyncio.run(start_microservice())
     else: 
         # Run as a job
-        run_as_job()
+        try:
+            run_as_job()
+            sys.exit(0)  # Explicit success exit
+        except Exception as e:
+            print(f"Job failed with error: {e}")
+            sys.exit(1)  # Exit with error code
