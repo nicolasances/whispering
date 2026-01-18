@@ -9,7 +9,7 @@ import shutil
 from whispercpp import Whisper
 from storage import delete_audio_file_from_s3, download_audio_file_from_s3, list_audio_files_to_process, store_audio_file_on_s3, store_transcription_on_s3
 
-w = Whisper('medium')
+w = Whisper('tiny')
 
 # Get upload directory from environment variable
 UPLOAD_DIR = os.getenv('AUDIO_UPLOAD_DIR', '/app/audiofiles')
