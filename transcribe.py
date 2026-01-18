@@ -42,7 +42,7 @@ async def transcribe_recording(request: Request, user_context: UserContext, exec
     return {"error": "No file uploaded"}
 
 @toto_delegate
-async def transcribe_recording(request: Request, user_context: UserContext, exec_context: ExecutionContext):
+async def start_transcription_job(request: Request, user_context: UserContext, exec_context: ExecutionContext):
     '''
     This delegate handles transcription requests, but ASYNCHRONOUSLY: it starts a job 
     - it uploads the audio file to S3 
