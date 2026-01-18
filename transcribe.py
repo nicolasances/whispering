@@ -78,12 +78,12 @@ async def start_transcription_job(request: Request, user_context: UserContext, e
             
             ecs_client = boto3.client('ecs')
             environment = os.getenv('ENVIRONMENT', 'dev')
-            cluster_name = os.getenv('ECS_CLUSTER_NAME', f'toto-ecs-{environment}')
+            cluster_arn = os.getenv('ECS_CLUSTER_ARN', f'toto-ecs-{environment}')
             subnets = os.getenv('ECS_SUBNETS', '').split(',')
             security_group = os.getenv('ECS_SECURITY_GROUP', '')
             
             response = ecs_client.run_task(
-                cluster=cluster_name,
+                cluster=cluster_arn,
                 taskDefinition=f'whispering-{environment}-job',
                 launchType='FARGATE',
                 networkConfiguration={
