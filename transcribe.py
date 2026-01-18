@@ -1,5 +1,5 @@
 
-import uuid
+from uuid import uuid4
 from fastapi import Request
 from totoms.TotoDelegateDecorator import toto_delegate
 from totoms.model.UserContext import UserContext
@@ -66,7 +66,7 @@ async def start_transcription_job(request: Request, user_context: UserContext, e
             
         try:
             # Generate a unique file ID
-            file_id = uuid.uuid4().hex()
+            file_id = uuid4().hex()
             
             # Upload to S3
             s3_filepath = store_audio_file_on_s3(local_file_path, file_id)
