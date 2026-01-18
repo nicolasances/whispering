@@ -145,11 +145,14 @@ def run_as_job():
             result = w.transcribe(local_file_path)
             text = w.extract_text(result)
             
+            # Join the text array into a single string
+            full_text = "".join(text)
+            
             print(f"Transcription completed successfully")
-            print(f"Transcription:\n{text}")
+            print(f"Transcription:\n{full_text}")
             
             # Store the transcription on S3
-            store_transcription_on_s3(text, os.path.basename(s3_key))
+            store_transcription_on_s3(full_text, os.path.basename(s3_key))
             
             print(f"Text stored on S3: {s3_key}")
             
