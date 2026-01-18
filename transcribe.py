@@ -7,7 +7,7 @@ from totoms.model.ExecutionContext import ExecutionContext
 import os
 import shutil
 from whispercpp import Whisper
-from storage import delete_audio_file_from_s3, download_audio_file_from_s3, list_audio_files_to_process, store_audio_file_on_s3, store_text_on_s3, store_transcription_on_s3
+from storage import delete_audio_file_from_s3, download_audio_file_from_s3, list_audio_files_to_process, store_audio_file_on_s3, store_transcription_on_s3
 
 w = Whisper('tiny')
 
