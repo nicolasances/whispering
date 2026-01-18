@@ -3,6 +3,7 @@ import os
 from totoms import (APIConfiguration, TotoEnvironment, TotoMicroserviceConfiguration, TotoMicroservice)
 from totoms.TotoMicroservice import APIEndpoint, determine_environment
 from config import WhisperConfig
+from status import get_transcription
 from transcribe import run_as_job, start_transcription_job, transcribe_recording
 
 def get_microservice_config() -> TotoMicroserviceConfiguration:
@@ -18,6 +19,7 @@ def get_microservice_config() -> TotoMicroserviceConfiguration:
             api_endpoints=[
                 APIEndpoint(path="/transcribe", method="POST", delegate=transcribe_recording), 
                 APIEndpoint(path="/transcribejob", method="POST", delegate=start_transcription_job), 
+                APIEndpoint(path="/transcriptions/{job_id}", method="GET", delegate=get_transcription), 
             ]
         )
     )

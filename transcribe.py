@@ -1,5 +1,5 @@
 
-import uuid
+from datetime import datetime
 from fastapi import Request
 from totoms.TotoDelegateDecorator import toto_delegate
 from totoms.model.UserContext import UserContext
@@ -7,9 +7,9 @@ from totoms.model.ExecutionContext import ExecutionContext
 import os
 import shutil
 from whispercpp import Whisper
-from storage import delete_audio_file_from_s3, download_audio_file_from_s3, list_audio_files_to_process, store_audio_file_on_s3, store_text_on_s3, store_transcription_on_s3
+from storage import delete_audio_file_from_s3, download_audio_file_from_s3, list_audio_files_to_process, store_audio_file_on_s3, store_transcription_on_s3
 
-w = Whisper('tiny')
+w = Whisper('medium')
 
 # Get upload directory from environment variable
 UPLOAD_DIR = os.getenv('AUDIO_UPLOAD_DIR', '/app/audiofiles')
@@ -32,7 +32,10 @@ async def transcribe_recording(request: Request, user_context: UserContext, exec
             result = w.transcribe(upload_name)
             text = w.extract_text(result)
             
-            return {"transcription": text}
+            # test is an array of strings that need to be joined
+            full_text = "".join(text)
+            
+            return {"text": full_text}
         
         finally:
             # Clean up the audio file
@@ -62,8 +65,8 @@ async def start_transcription_job(request: Request, user_context: UserContext, e
             shutil.copyfileobj(fileobj, upload_file)
             
         try:
-            # Generate a unique file ID
-            file_id = uuid.uuid4().hex()
+            # Generate a unique file ID using timestamp in milliseconds
+            file_id = str(int(datetime.now().timestamp() * 1000))
             
             # Upload to S3
             s3_filepath = store_audio_file_on_s3(local_file_path, file_id)
@@ -73,14 +76,18 @@ async def start_transcription_job(request: Request, user_context: UserContext, e
             # Start the ECS job using the boto SDK
             import boto3
             
-            ecs_client = boto3.client('ecs')
+            # Get AWS region from environment
+            aws_region = os.getenv('AWS_REGION', os.getenv('AWS_DEFAULT_REGION', 'eu-north-1'))
+            ecs_client = boto3.client('ecs', region_name=aws_region)
             environment = os.getenv('ENVIRONMENT', 'dev')
-            cluster_name = os.getenv('ECS_CLUSTER_NAME', f'toto-ecs-{environment}')
+            cluster_arn = os.getenv('ECS_CLUSTER_ARN', f'toto-ecs-{environment}')
             subnets = os.getenv('ECS_SUBNETS', '').split(',')
             security_group = os.getenv('ECS_SECURITY_GROUP', '')
             
+            exec_context.logger.log(exec_context.cid, f"Running task on cluster {cluster_arn} in subnets {subnets} with security group {security_group} in region {aws_region} - Environment: {environment}")
+            
             response = ecs_client.run_task(
-                cluster=cluster_name,
+                cluster=cluster_arn,
                 taskDefinition=f'whispering-{environment}-job',
                 launchType='FARGATE',
                 networkConfiguration={
@@ -138,11 +145,14 @@ def run_as_job():
             result = w.transcribe(local_file_path)
             text = w.extract_text(result)
             
+            # Join the text array into a single string
+            full_text = "".join(text)
+            
             print(f"Transcription completed successfully")
-            print(f"Transcription:\n{text}")
+            print(f"Transcription:\n{full_text}")
             
             # Store the transcription on S3
-            store_transcription_on_s3(text, os.path.basename(s3_key))
+            store_transcription_on_s3(full_text, os.path.basename(s3_key))
             
             print(f"Text stored on S3: {s3_key}")
             

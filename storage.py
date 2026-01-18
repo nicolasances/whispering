@@ -47,6 +47,25 @@ def list_audio_files_to_process() -> list:
     
     return audio_files
 
+def get_transcription_file_content(job_id: str) -> str | None: 
+    '''
+    Looks in S3 for the transcription file corresponding to the given job ID and returns its content if found. If not found, returns None
+    '''
+    if not BUCKET_NAME:
+        raise ValueError("WHISPERING_S3_BUCKET_NAME environment variable is not set")
+
+    s3_key = f"{S3_TRANSCRIPTIONS_FOLDER}/{job_id}-transcription"       
+    
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
+        
+        transcription_text = response['Body'].read().decode('utf-8')
+        
+        return transcription_text
+    except s3_client.exceptions.NoSuchKey:
+        return None
+
 def download_audio_file_from_s3(s3_key: str, local_file_path: str):
     """
     Download audio file from S3 to local path
