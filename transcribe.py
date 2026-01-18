@@ -76,11 +76,15 @@ async def start_transcription_job(request: Request, user_context: UserContext, e
             # Start the ECS job using the boto SDK
             import boto3
             
-            ecs_client = boto3.client('ecs')
+            # Get AWS region from environment
+            aws_region = os.getenv('AWS_REGION', os.getenv('AWS_DEFAULT_REGION', 'eu-north-1'))
+            ecs_client = boto3.client('ecs', region_name=aws_region)
             environment = os.getenv('ENVIRONMENT', 'dev')
             cluster_arn = os.getenv('ECS_CLUSTER_ARN', f'toto-ecs-{environment}')
             subnets = os.getenv('ECS_SUBNETS', '').split(',')
             security_group = os.getenv('ECS_SECURITY_GROUP', '')
+            
+            exec_context.logger.log(exec_context.cid, f"Running task on cluster {cluster_arn} in subnets {subnets} with security group {security_group} in region {aws_region} - Environment: {environment}")
             
             response = ecs_client.run_task(
                 cluster=cluster_arn,
