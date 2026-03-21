@@ -1,6 +1,7 @@
 
 from datetime import datetime
 from fastapi import Request
+from fastapi.responses import JSONResponse
 from totoms.TotoDelegateDecorator import toto_delegate
 from totoms.model.UserContext import UserContext
 from totoms.model.ExecutionContext import ExecutionContext
@@ -52,6 +53,10 @@ async def start_transcription_job(request: Request, user_context: UserContext, e
     - it starts a transcription job (this same container in job mode)
     - it returns a job ID to the user
     '''
+    
+    hyperscaler = os.getenv('HYPERSCALER', 'aws').lower()
+    if hyperscaler == 'gcp':
+        return JSONResponse(status_code=400, content={"error": "Async transcription is not supported on GCP. Use POST /whispering/transcribe for synchronous transcription."})
     
     form = await request.form()
     file = form['file']
